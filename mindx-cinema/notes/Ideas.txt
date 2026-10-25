@@ -1,0 +1,36 @@
+1. Features
++ Study plans: Add subjects, homework, assignments, deadlines, and revision sessions.
++ Task completion: Mark tasks, and earn rewards
++ Chest rewards: Give users chests for completing studies (which users add)
++ Random cats drop: Opening a chest reveals a random cat image, via https://thecatapi.com/
++ Cat collection: Save discovered cats to a collection
++ Progress tracking: Track study time, complete tasks, collect cats
+
+2. Reward system
+- Cardboard box: complete small study task
+- Homework box: finish a homework
+- Study chest: finish a focused study session
+- Golden chest: reach a significant study milestone
+
+3. Cat collection
+- Each cat has a unique image ID so the same cat can be recognized the later
+- Store cat's image URL and ID
+- Do NOT allow duplicate cat images
+- Rarity is assigned randomly for cat pictures
+
+4. Website pages:
+- Dashboard: Today's tasks, study progress, available chests, and recent cat discoveries.
+- Schedule: Classes, deadlines, and study sessions.
+- Tasks: Create, edit, complete, and prioritize assignments.
+- Chest Room: View earned chests and open them.
+- Cat Collection: Browse, filter, and inspect collected cats.
+- Statistics: Study time, completed tasks, streaks, and collection progress.
+- Settings: Customize rewards, reminders, and study goals.
+
+5. Technical foundation
+- HTML: Page structure and content.
+- CSS / Bootstrap: Layout, responsive design, cards, and animations.
+- JavaScript: Study timer, task management, chest-opening, and reward logic.
+- The Cat API: Retrieve random cat images. 
+- Storage: localStorage for an initial single-browser prototype.
+- Database and authentication: Sign up / Log in, ...

@@ -1,0 +1,187 @@
+:root {
+    --bg-body: #03071e;
+    --bg-surface: #001219;
+    --bg-card: #000814;
+    --border-color: #0d1b2a;
+    --text-main: #f0f6fc;
+    --text-muted: #8b949e;
+    --primary-accent: #0b090a;
+}
+
+.nav-icon-container {
+    position: relative;
+    width: 200px;
+    height: 120px;
+}
+
+.nav-icon {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+
+    top: 50%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Background surfaces */
+.bg-dark-surface {
+    background-color: var(--bg-surface) !important;
+}
+
+.bg-dark-card {
+    background-color: var(--bg-card) !important;
+}
+
+/* App Logo Icon styling */
+.app-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border: 1.5px solid var(--primary-accent);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* View switcher */
+.app-view {
+    display: none;
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+.app-view.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Chest Cards */
+.chest-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chest-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.chest-icon-wrapper {
+    animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+/* Rarity Glowing Borders & Badges */
+.rarity-Common {
+    border-color: #8b949e !important;
+}
+
+.badge-Common {
+    background-color: #484f58;
+    color: #fff;
+}
+
+.rarity-Rare {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+
+.badge-Rare {
+    background-color: #0284c7;
+    color: #fff;
+}
+
+.rarity-Epic {
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 14px rgba(168, 85, 247, 0.25);
+}
+
+.badge-Epic {
+    background-color: #9333ea;
+    color: #fff;
+}
+
+.rarity-Legendary {
+    border-color: #eab308 !important;
+    box-shadow: 0 0 18px rgba(234, 179, 8, 0.35);
+}
+
+.badge-Legendary {
+    background-color: #ca8a04;
+    color: #fff;
+}
+
+/* Cat Card Thumbnails */
+.cat-thumbnail {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    width: 100%;
+}
+
+.cat-card-interactive {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.cat-card-interactive:hover {
+    transform: scale(1.03);
+}
+
+.animate-pulse {
+    animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Scrollable containers */
+.task-list-container {
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.max-w-700 {
+    max-width: 700px;
+}

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meowus Education</title>
+    <!-- Bootstrap 5 CSS (Dark Mode enabled) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./mindx-cinema/styles/style.css" />
+</head>
+
+<body>
+    <!-- Top Navigation Bar -->
+    <header
+        class="navbar navbar-expand-lg navbar-dark border-bottom border-secondary-subtle sticky-top bg-dark-surface">
+        <div class="container-fluid px-3 px-lg-4">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
+                <span class="nav-icon-container">
+                    <img class="nav-icon" src="/mindx-cinema/assets/icon.png" alt="App Logo">
+                </span>
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Nav Items -->
+            <div class="collapse navbar-collapse" id="topNav">
+                <ul class="navbar-nav me-auto mb-2 ms-lg-5 nav-pills gap-1 ms-lg-3">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-view="dashboard"><i class="bi bi-grid-1x2-fill me-1"></i>
+                            Dashboard</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-view="tasks"><i class="bi bi-check2-square me-1"></i>
+                            Tasks</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-view="schedule"><i class="bi bi-calendar3 me-1"></i>
+                            Schedule</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link position-relative" data-view="chests">
+                            <i class="bi bi-archive-fill me-1"></i> Chest Room
+                            <span id="navChestBadge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-view="collection"><i class="bi bi-award-fill me-1"></i> Cat
+                            Gallery</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-view="stats"><i class="bi bi-bar-chart-line-fill me-1"></i>
+                            Statistics</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-view="settings"><i class="bi bi-gear-fill me-1"></i>
+                            Settings</button>
+                    </li>
+                </ul>
+
+                <!-- User / Auth Profile Area -->
+                <div class="d-flex align-items-center gap-2">
+                    <div id="authProfileDisplay" class="d-none align-items-center gap-2">
+                        <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1"
+                            id="currentUserDisplay">User</span>
+                        <button class="btn btn-sm btn-outline-danger" id="logoutBtn" title="Logout"><i
+                                class="bi bi-box-arrow-right"></i></button>
+                    </div>
+                    <button class="btn btn-sm btn-primary" id="loginModalBtn" data-bs-toggle="modal"
+                        data-bs-target="#authModal">
+                        <i class="bi bi-person-fill"></i> Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Banner / Study Timer Widget (Fixed Bar) -->
+    <section class="timer-bar bg-dark-subtle border-bottom border-secondary-subtle py-2">
+        <div class="container d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-stopwatch text-primary fs-4"></i>
+                <div>
+                    <span class="small text-secondary d-block">Session Timer</span>
+                    <span class="fs-5 fw-bold font-monospace" id="timerDisplay">25:00</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-secondary active" data-timer-type="25">25m</button>
+                    <button class="btn btn-outline-secondary" data-timer-type="50">50m</button>
+                    <button class="btn btn-outline-secondary" data-timer-type="stopwatch">Stopwatch</button>
+                </div>
+                <button class="btn btn-sm btn-success" id="timerToggleBtn"><i class="bi bi-play-fill"></i>
+                    Start</button>
+                <button class="btn btn-sm btn-outline-secondary" id="timerResetBtn"><i
+                        class="bi bi-arrow-counterclockwise"></i></button>
+                <button class="btn btn-sm btn-warning text-dark fw-bold" id="claimSessionRewardBtn" disabled
+                    title="Finish at least 15 min to earn a Study Chest">
+                    <i class="bi bi-gift-fill"></i> Finish & Claim Chest
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main View Container -->
+    <main class="container py-4 flex-grow-1">
+
+        <!-- VIEW 1: DASHBOARD -->
+        <div id="view-dashboard" class="app-view active">
+            <div class="row g-4">
+                <!-- Quick stats -->
+                <div class="col-12 col-md-4">
+                    <div class="card h-100 p-3 bg-dark-card border-secondary">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-secondary fw-semibold">Daily Study Progress</span>
+                            <i class="bi bi-fire text-warning fs-4"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1" id="dashStudyMinutes">0 / 60 min</h3>
+                        <div class="progress progress-bar-themed mb-2" style="height: 10px;">
+                            <div class="progress-bar bg-primary" id="dashGoalProgress" style="width: 0%"></div>
+                        </div>
+                        <span class="small text-secondary" id="dashStreakText">🔥 0-day study streak</span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="card h-100 p-3 bg-dark-card border-secondary">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-secondary fw-semibold">Available Chests</span>
+                            <i class="bi bi-box2-heart text-danger fs-4"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1" id="dashChestCount">0 Unopened</h3>
+                        <p class="small text-secondary mb-3">Earn more chests by completing tasks & sessions.</p>
+                        <button class="btn btn-sm btn-outline-primary mt-auto" onclick="switchView('chests')">Go to
+                            Chest Room</button>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="card h-100 p-3 bg-dark-card border-secondary">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-secondary fw-semibold">Cat Collection</span>
+                            <i class="bi bi-award text-success fs-4"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1" id="dashCatCount">0 Collected</h3>
+                        <p class="small text-secondary mb-3">Unique cats rescued from study chests.</p>
+                        <button class="btn btn-sm btn-outline-success mt-auto" onclick="switchView('collection')">View
+                            Collection</button>
+                    </div>
+                </div>
+
+                <!-- Today's Pending Tasks -->
+                <div class="col-12 col-lg-7">
+                    <div class="card bg-dark-card border-secondary p-3 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0"><i class="bi bi-list-task me-2 text-primary"></i>Today's Priority
+                                Tasks</h5>
+                            <button class="btn btn-sm btn-primary" onclick="openCreateTaskModal()">+ Add Task</button>
+                        </div>
+                        <div id="dashTaskList" class="task-list-container d-flex flex-column gap-2">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Cat Discoveries -->
+                <div class="col-12 col-lg-5">
+                    <div class="card bg-dark-card border-secondary p-3 h-100">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-stars text-warning me-2"></i>Recent Cat Discoveries
+                        </h5>
+                        <div id="dashRecentCats" class="row g-2">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: TASKS -->
+        <div id="view-tasks" class="app-view">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">Study Tasks & Assignments</h3>
+                    <p class="text-secondary mb-0">Complete tasks to earn corresponding reward chests!</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <select id="taskCategoryFilter" class="form-select form-select-sm bg-dark border-secondary">
+                        <option value="all">All Categories</option>
+                        <option value="small">Small Task (Cardboard Box)</option>
+                        <option value="homework">Homework (Homework Box)</option>
+                        <option value="milestone">Milestone (Golden Chest)</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm px-3" onclick="openCreateTaskModal()"><i
+                            class="bi bi-plus-lg"></i> Add Task</button>
+                </div>
+            </div>
+
+            <div class="row g-3" id="taskListGrid">
+                <!-- Rendered task cards -->
+            </div>
+        </div>
+
+        <!-- VIEW 3: SCHEDULE -->
+        <div id="view-schedule" class="app-view">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">Study Schedule</h3>
+                    <p class="text-secondary mb-0">Plan your revisions, lecture sessions, and assignment deadlines.</p>
+                </div>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#scheduleModal">+ Schedule
+                    Event</button>
+            </div>
+
+            <div class="row g-3" id="scheduleListContainer">
+                <!-- Scheduled blocks injected here -->
+            </div>
+        </div>
+
+        <!-- VIEW 4: CHEST ROOM -->
+        <div id="view-chests" class="app-view">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold mb-1">Rewards & Chest Room</h2>
+                <p class="text-secondary">Open earned chests to adopt brand new unique cats for your gallery!</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <!-- Cardboard Box -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card chest-card bg-dark-card border-secondary text-center p-3 h-100">
+                        <div class="chest-icon-wrapper mb-3">
+                            <i class="bi bi-box-seam fs-1 text-secondary"></i>
+                        </div>
+                        <h5 class="fw-bold">Cardboard Box</h5>
+                        <p class="small text-secondary mb-3">Reward for completing quick tasks.</p>
+                        <div class="mb-3">
+                            <span class="badge bg-secondary-subtle text-secondary-emphasis fs-6"
+                                id="boxCount-cardboard">0 Available</span>
+                        </div>
+                        <button class="btn btn-primary mt-auto" onclick="openChest('cardboard')" id="openBtn-cardboard"
+                            disabled>Open Box</button>
+                    </div>
+                </div>
+
+                <!-- Homework Box -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card chest-card bg-dark-card border-secondary text-center p-3 h-100">
+                        <div class="chest-icon-wrapper mb-3">
+                            <i class="bi bi-briefcase-fill fs-1 text-info"></i>
+                        </div>
+                        <h5 class="fw-bold">Homework Box</h5>
+                        <p class="small text-secondary mb-3">Reward for finishing a full homework.</p>
+                        <div class="mb-3">
+                            <span class="badge bg-info-subtle text-info fs-6" id="boxCount-homework">0 Available</span>
+                        </div>
+                        <button class="btn btn-info mt-auto text-dark fw-bold" onclick="openChest('homework')"
+                            id="openBtn-homework" disabled>Open Box</button>
+                    </div>
+                </div>
+
+                <!-- Study Chest -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card chest-card bg-dark-card border-secondary text-center p-3 h-100">
+                        <div class="chest-icon-wrapper mb-3">
+                            <i class="bi bi-gem fs-1 text-primary"></i>
+                        </div>
+                        <h5 class="fw-bold">Study Chest</h5>
+                        <p class="small text-secondary mb-3">Earned from focused study timer sessions.</p>
+                        <div class="mb-3">
+                            <span class="badge bg-primary-subtle text-primary fs-6" id="boxCount-study">0
+                                Available</span>
+                        </div>
+                        <button class="btn btn-primary mt-auto" onclick="openChest('study')" id="openBtn-study"
+                            disabled>Open Chest</button>
+                    </div>
+                </div>
+
+                <!-- Golden Chest -->
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card chest-card bg-dark-card border-warning text-center p-3 h-100">
+                        <div class="chest-icon-wrapper mb-3">
+                            <i class="bi bi-trophy-fill fs-1 text-warning"></i>
+                        </div>
+                        <h5 class="fw-bold text-warning">Golden Chest</h5>
+                        <p class="small text-secondary mb-3">Higher Epic/Legendary cat chance for milestones.</p>
+                        <div class="mb-3">
+                            <span class="badge bg-warning text-dark fs-6" id="boxCount-golden">0 Available</span>
+                        </div>
+                        <button class="btn btn-warning mt-auto fw-bold text-dark" onclick="openChest('golden')"
+                            id="openBtn-golden" disabled>Open Golden Chest</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 5: CAT COLLECTION -->
+        <div id="view-collection" class="app-view">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <div>
+                    <h3 class="fw-bold mb-0">Cat Collection</h3>
+                    <p class="text-secondary mb-0">Every cat is guaranteed unique by CatAPI ID.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <select id="collectionRarityFilter" class="form-select form-select-sm bg-dark border-secondary">
+                        <option value="all">All Rarities</option>
+                        <option value="Common">Common</option>
+                        <option value="Rare">Rare</option>
+                        <option value="Epic">Epic</option>
+                        <option value="Legendary">Legendary</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row g-3" id="collectionGrid">
+                <!-- Cats injected here -->
+            </div>
+        </div>
+
+        <!-- VIEW 6: STATISTICS -->
+        <div id="view-stats" class="app-view">
+            <h3 class="fw-bold mb-4">Study Performance & Collection Metrics</h3>
+            <div class="row g-4">
+                <div class="col-12 col-md-3">
+                    <div class="card bg-dark-card border-secondary p-3 text-center">
+                        <h6 class="text-secondary">Total Study Time</h6>
+                        <h2 class="fw-bold text-primary mb-0" id="statTotalMinutes">0m</h2>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card bg-dark-card border-secondary p-3 text-center">
+                        <h6 class="text-secondary">Tasks Completed</h6>
+                        <h2 class="fw-bold text-success mb-0" id="statCompletedTasks">0</h2>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card bg-dark-card border-secondary p-3 text-center">
+                        <h6 class="text-secondary">Cats Adopted</h6>
+                        <h2 class="fw-bold text-warning mb-0" id="statCatsCount">0</h2>
+                    </div>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="card bg-dark-card border-secondary p-3 text-center">
+                        <h6 class="text-secondary">Current Streak</h6>
+                        <h2 class="fw-bold text-danger mb-0" id="statStreak">0 Days</h2>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="card bg-dark-card border-secondary p-4 h-100">
+                        <h5 class="fw-bold mb-3">Cat Collection Rarity Breakdown</h5>
+                        <div id="rarityBreakdownContainer" class="d-flex flex-column gap-3">
+                            <!-- Progress meters for Common/Rare/Epic/Legendary -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="card bg-dark-card border-secondary p-4 h-100">
+                        <h5 class="fw-bold mb-3">Chests Opened Lifetime</h5>
+                        <div id="chestBreakdownContainer" class="d-flex flex-column gap-2">
+                            <!-- Breakdown list -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 7: SETTINGS -->
+        <div id="view-settings" class="app-view">
+            <div class="card bg-dark-card border-secondary p-4 max-w-700 mx-auto">
+                <h4 class="fw-bold mb-3">App & Study Settings</h4>
+
+                <div class="mb-3">
+                    <label class="form-label">Daily Study Goal (Minutes)</label>
+                    <input type="number" class="form-control bg-dark border-secondary" id="settingDailyGoal" min="10"
+                        max="600" value="60">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Custom The Cat API Key (Optional)</label>
+                    <input type="password" class="form-control bg-dark border-secondary" id="settingApiKey"
+                        placeholder="Leave empty to use public shared key">
+                    <div class="form-text">Free API key from <a href="https://thecatapi.com/" target="_blank"
+                            rel="noreferrer">thecatapi.com</a> removes global request throttling.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Study Background Music</label>
+                    <select class="form-select bg-dark border-secondary" id="settingMusicTrack">
+                        <option value="disabled">Disabled</option>
+                        <option value="ambient" selected>Ambient Focus (Looped)</option>
+                        <option value="piano">Calm Piano (Looped)</option>
+                        <option value="lo-fi">Lo-Fi Study Beats (Looped)</option>
+                        <option value="nature">Nature Sounds (Looped)</option>
+                    </select>
+                    <div class="form-text">Background music plays during timer sessions. Your custom upload coming soon!
+                    </div>
+                </div>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="settingMusicToggle" checked>
+                    <label class="form-check-label" for="settingMusicToggle">Enable Background Study Music</label>
+                </div>
+
+                <!-- Keep the existing sound effects toggle -->
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="settingSoundToggle" checked>
+                    <label class="form-check-label" for="settingSoundToggle">Enable Sound Effects for Chests &
+                        Timer</label>
+                </div>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="settingSoundToggle" checked>
+                    <label class="form-check-label" for="settingSoundToggle">Enable Sound Effects for Chests &
+                        Timer</label>
+                </div>
+
+                <hr class="border-secondary my-4" />
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="fw-bold text-danger mb-1">Reset All Local Data</h6>
+                        <p class="small text-secondary mb-0">Deletes current user tasks, streak, and cat collection.</p>
+                    </div>
+                    <button class="btn btn-outline-danger btn-sm" id="resetDataBtn">Purge Data</button>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <button class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL: Add / Edit Task -->
+    <div class="modal fade" id="taskModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark-card border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold" id="taskModalTitle">Add New Study Task</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="taskForm">
+                        <input type="hidden" id="taskFormId" />
+                        <div class="mb-3">
+                            <label class="form-label">Task Title</label>
+                            <input type="text" class="form-control bg-dark border-secondary" id="taskTitleInput"
+                                required placeholder="e.g. Read Physics Chapter 4" />
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Subject</label>
+                                <input type="text" class="form-control bg-dark border-secondary" id="taskSubjectInput"
+                                    required placeholder="e.g. Math, History" />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Deadline</label>
+                                <input type="date" class="form-control bg-dark border-secondary" id="taskDeadlineInput"
+                                    required />
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Type & Reward</label>
+                                <select class="form-select bg-dark border-secondary" id="taskTypeInput">
+                                    <option value="small">Small Task (Cardboard)</option>
+                                    <option value="homework">Homework (Homework Box)</option>
+                                    <option value="milestone">Milestone (Golden Chest)</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Priority</label>
+                                <select class="form-select bg-dark border-secondary" id="taskPriorityInput">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium" selected>Medium</option>
+                                    <option value="High">High</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Save Task</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Add Schedule Event -->
+    <div class="modal fade" id="scheduleModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark-card border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold">Schedule Study Session / Class</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleForm">
+                        <div class="mb-3">
+                            <label class="form-label">Event Name</label>
+                            <input type="text" class="form-control bg-dark border-secondary" id="schedTitle" required
+                                placeholder="Calculus Lecture / Revision" />
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Day of Week</label>
+                                <select class="form-select bg-dark border-secondary" id="schedDay">
+                                    <option>Monday</option>
+                                    <option>Tuesday</option>
+                                    <option>Wednesday</option>
+                                    <option>Thursday</option>
+                                    <option>Friday</option>
+                                    <option>Saturday</option>
+                                    <option>Sunday</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Time</label>
+                                <input type="time" class="form-control bg-dark border-secondary" id="schedTime" required
+                                    value="10:00" />
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Type</label>
+                            <select class="form-select bg-dark border-secondary" id="schedType">
+                                <option value="Class">Class / Lecture</option>
+                                <option value="Revision">Revision Session</option>
+                                <option value="Deadline">Assignment Deadline</option>
+                            </select>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Add Event</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Chest Reveal (Unboxing Animation) -->
+    <div class="modal fade" id="chestRevealModal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark-card border-secondary text-center overflow-hidden">
+                <div class="modal-body p-4">
+                    <div id="unboxingSpinner" class="py-5">
+                        <div class="spinner-grow text-warning mb-3" style="width: 3.5rem; height: 3.5rem;"></div>
+                        <h4 class="fw-bold animate-pulse">Unlocking Chest & Calling The Cat API...</h4>
+                        <p class="text-secondary small">Looking for a brand new, unique cat...</p>
+                    </div>
+
+                    <div id="unboxingResult" class="d-none">
+                        <span class="badge mb-2 px-3 py-1 fs-6 text-uppercase fw-bold" id="catRarityBadge">Common</span>
+                        <div class="cat-reveal-image-container position-relative rounded overflow-hidden my-3">
+                            <img id="revealCatImage" src="" alt="Rescued Cat" class="img-fluid rounded" />
+                        </div>
+                        <h4 class="fw-bold" id="catRevealName">Unique Cat Rescued!</h4>
+                        <p class="text-secondary small font-monospace mb-1" id="catRevealId">Cat ID: -</p>
+                        <p class="text-secondary small mb-3" id="catRevealDate"></p>
+                        <button class="btn btn-success px-4" data-bs-dismiss="modal">Add to Collection</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Cat Card Inspector -->
+    <div class="modal fade" id="catInspectModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark-card border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold" id="inspectTitle">Cat Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="inspectImage" src="" alt="Cat Image" class="img-fluid rounded mb-3 border border-secondary"
+                        style="max-height: 380px; object-fit: cover;" />
+                    <h5 class="fw-bold mb-1" id="inspectId"></h5>
+                    <span class="badge mb-2 px-3 py-1" id="inspectRarity"></span>
+                    <p class="text-secondary small mb-0" id="inspectDate"></p>
+
+                    <!-- NEW: Cat Rename Section -->
+                    <div class="card bg-dark border-secondary p-2 mb-3">
+                        <input type="text" class="form-control bg-dark border-secondary form-control-sm"
+                            id="catCustomName" placeholder="Give your cat a custom name..." maxlength="50">
+                        <button class="btn btn-sm btn-outline-success mt-2 w-100" id="saveCustomNameBtn">
+                            <i class="bi bi-pencil"></i> Save Custom Name
+                        </button>
+                    </div>
+
+                    <button class="btn btn-sm btn-outline-danger w-100" id="removeCatBtn">
+                        <i class="bi bi-trash"></i> Remove from Collection
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Sign In / Auth -->
+    <div class="modal fade" id="authModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark-card border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold">Sign In / Switch Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="authForm">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control bg-dark border-secondary" id="authUsernameInput"
+                                required placeholder="e.g. CatScholar" />
+                            <div class="form-text">Every username keeps separate tasks, chests, and collections in
+                                localStorage.</div>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Continue</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio for background study music -->
+    <audio id="bgMusicPlayer" loop style="display: none;"></audio>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./mindx-cinema/scripts/app.js"></script>
+</body>
+
+</html>
