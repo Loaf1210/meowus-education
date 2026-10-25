@@ -1,11 +1,11 @@
 :root {
-    --bg-body: #03071e;
-    --bg-surface: #001219;
-    --bg-card: #000814;
-    --border-color: #0d1b2a;
+    --bg-body: #000000;
+    --bg-surface: #000000;
+    --bg-card: #000000;
+    --border-color: #04080e;
     --text-main: #f0f6fc;
     --text-muted: #8b949e;
-    --primary-accent: #0b090a;
+    --primary-accent: #000000;
 }
 
 .nav-icon-container {
