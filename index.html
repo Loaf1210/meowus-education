@@ -86,16 +86,31 @@
         </div>
     </header>
 
-    <!-- Global Banner / Study Timer Widget (Fixed Bar) -->
-    <section class="timer-bar bg-dark-subtle border-bottom border-secondary-subtle py-2">
-        <div class="container d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <!-- Global Banner / Study Timer & Music Widget (Fixed Bar) -->
+    <section class="timer-bar border-bottom border-info-subtle py-2">
+        <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <!-- Left: Timer Display -->
             <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-stopwatch text-primary fs-4"></i>
+                <i class="bi bi-stopwatch text-info fs-4"></i>
                 <div>
                     <span class="small text-secondary d-block">Session Timer</span>
                     <span class="fs-5 fw-bold font-monospace" id="timerDisplay">25:00</span>
                 </div>
             </div>
+
+            <!-- Center: Looped Study Music Bar -->
+            <div
+                class="music-player-pill d-flex align-items-center gap-2 px-3 py-1 rounded-pill border border-secondary">
+                <button class="btn btn-sm btn-link text-info p-0 text-decoration-none" id="quickMusicToggleBtn"
+                    title="Play/Pause Study Music">
+                    <i class="bi bi-music-note-beamed fs-5" id="quickMusicIcon"></i>
+                </button>
+                <span class="small fw-semibold text-light" id="musicStatusText">Study Music</span>
+                <input type="range" class="form-range music-volume-slider" id="musicVolumeSlider" min="0" max="1"
+                    step="0.05" value="0.5" title="Music Volume">
+            </div>
+
+            <!-- Right: Timer Controls -->
             <div class="d-flex align-items-center gap-2">
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-secondary active" data-timer-type="25">25m</button>
@@ -396,34 +411,23 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Study Background Music</label>
+                    <label class="form-label">Study Background Music Track</label>
                     <select class="form-select bg-dark border-secondary" id="settingMusicTrack">
-                        <option value="disabled">Disabled</option>
-                        <option value="ambient" selected>Ambient Focus (Looped)</option>
-                        <option value="piano">Calm Piano (Looped)</option>
-                        <option value="lo-fi">Lo-Fi Study Beats (Looped)</option>
-                        <option value="nature">Nature Sounds (Looped)</option>
+                        <option value="./mindx-cinema/assets/study-music.mp3" selected>Main Study Theme (study-music.mp3)</option>
+                        <option value="./mindx-cinema/assets/lofi.mp3">Lo-Fi Beats (lofi.mp3)</option>
+                        <option value="./mindx-cinema/assets/ambient.mp3">Ambient Focus (ambient.mp3)</option>
                     </select>
-                    <div class="form-text">Background music plays during timer sessions. Your custom upload coming soon!
-                    </div>
+                    <div class="form-text">Put your audio files inside <code>/mindx-cinema/assets/</code>!</div>
                 </div>
 
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" id="settingMusicToggle" checked>
-                    <label class="form-check-label" for="settingMusicToggle">Enable Background Study Music</label>
-                </div>
-
-                <!-- Keep the existing sound effects toggle -->
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="settingSoundToggle" checked>
-                    <label class="form-check-label" for="settingSoundToggle">Enable Sound Effects for Chests &
-                        Timer</label>
+                    <label class="form-check-label" for="settingMusicToggle">Auto-Play Study Music When Timer Starts</label>
                 </div>
 
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" id="settingSoundToggle" checked>
-                    <label class="form-check-label" for="settingSoundToggle">Enable Sound Effects for Chests &
-                        Timer</label>
+                    <label class="form-check-label" for="settingSoundToggle">Enable Sound Effects for Chests & Timer</label>
                 </div>
 
                 <hr class="border-secondary my-4" />
@@ -634,8 +638,8 @@
         </div>
     </div>
 
-    <!-- Audio for background study music -->
-    <audio id="bgMusicPlayer" loop style="display: none;"></audio>
+    <!-- Audio for background study music (Put your study-music.mp3 in /mindx-cinema/assets/) -->
+    <audio id="bgMusicPlayer" src="./mindx-cinema/assets/study-music.mp3" loop preload="auto"></audio>
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

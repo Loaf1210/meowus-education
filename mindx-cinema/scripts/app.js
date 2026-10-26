@@ -12,7 +12,8 @@ const DEFAULT_STATE = {
         apiKey: '',
         soundEnabled: true,
         musicEnabled: true,
-        musicTrack: 'ambient'
+        musicTrack: "./mindx-cinema/assets/study-music.mp3",
+        musicVolume: 0.5
     },
     stats: {
         totalStudyMinutes: 0,
@@ -42,35 +43,10 @@ let sessionSecondsAccumulated = 0;
 // Bootstrap Modals instances
 let taskModalInstance, scheduleModalInstance, chestRevealModalInstance, catInspectModalInstance, authModalInstance;
 
-// --- AUDIO & MUSIC CONFIGURATION ---
-const STUDY_MUSIC_TRACKS = {
-    disabled: { name: 'Disabled', url: null },
-    ambient: {
-        name: 'Ambient Focus (Looped)',
-        url: 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=='
-    },
-    piano: {
-        name: 'Calm Piano (Looped)',
-        url: 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=='
-    },
-    'lo-fi': {
-        name: 'Lo-Fi Study Beats (Looped)',
-        url: 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=='
-    },
-    nature: {
-        name: 'Nature Sounds (Looped)',
-        url: 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA=='
-    }
-};
-
-let bgMusicPlayer = null;
-let currentMusicTrack = 'ambient';
+// --- AUDIO & MUSIC CONFIGURATION (Uses <audio id="bgMusicPlayer"> in HTML) ---
 let currentInspectingCatId = null;
 let audioContext = null;
 
-/**
- * Initialize or get existing AudioContext
- */
 function getAudioContext() {
     if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -78,110 +54,62 @@ function getAudioContext() {
     return audioContext;
 }
 
-/**
- * Generate simple procedural audio for background music
- * In production, replace with actual audio files from server
- */
-function generateProceduralAudio(trackType, durationSecs = 30) {
-    const ctx = getAudioContext();
-    const audioBuffer = ctx.createBuffer(
-        2,
-        ctx.sampleRate * durationSecs,
-        ctx.sampleRate
-    );
-
-    const left = audioBuffer.getChannelData(0);
-    const right = audioBuffer.getChannelData(1);
-
-    // Simple tone generation based on track type
-    const frequencies = {
-        ambient: [110, 165, 220, 165],
-        piano: [261.63, 329.63, 392, 329.63],
-        'lo-fi': [196, 220, 246.94, 220],
-        nature: [180, 200, 220, 200]
-    };
-
-    const freqs = frequencies[trackType] || frequencies.ambient;
-
-    for (let i = 0; i < audioBuffer.length; i++) {
-        const time = i / ctx.sampleRate;
-        const phaseIndex = Math.floor((time * 2) % freqs.length);
-        const freq = freqs[phaseIndex];
-        const phase = (time * freq * Math.PI * 2) % (Math.PI * 2);
-
-        // Soft sine wave with envelope
-        const envelope = Math.sin((time % 2) * Math.PI) * 0.15;
-        const sample = Math.sin(phase) * envelope;
-
-        left[i] = sample;
-        right[i] = sample;
-    }
-
-    return audioBuffer;
+function getMusicElement() {
+    return document.getElementById('bgMusicPlayer');
 }
 
 function playBackgroundMusic() {
-    if (!appState.settings.musicEnabled || appState.settings.musicTrack === 'disabled') {
-        stopBackgroundMusic();
-        return;
+    const audio = getMusicElement();
+    if (!audio) return;
+
+    const trackUrl = appState.settings.musicTrack || './mindx-cinema/assets/study-music.mp3';
+    if (audio.getAttribute('src') !== trackUrl) {
+        audio.setAttribute('src', trackUrl);
     }
 
-    try {
-        stopBackgroundMusic();
-        
-        const ctx = getAudioContext();
-        const audioBuffer = generateProceduralAudio(appState.settings.musicTrack, 30);
+    audio.volume = appState.settings.musicVolume ?? 0.5;
+    audio.loop = true;
 
-        bgMusicPlayer = ctx.createBufferSource();
-        bgMusicPlayer.buffer = audioBuffer;
-        bgMusicPlayer.loop = true;
-        bgMusicPlayer.loopStart = 0;
-        bgMusicPlayer.loopEnd = audioBuffer.duration;
-
-        const gainNode = ctx.createGain();
-        gainNode.gain.setValueAtTime(0.08, ctx.currentTime);
-
-        bgMusicPlayer.connect(gainNode);
-        gainNode.connect(ctx.destination);
-        bgMusicPlayer.start(0);
-
-        updateMusicStatus('playing');
-    } catch (e) {
-        console.warn('Could not initialize background music:', e);
-    }
+    audio.play().then(() => {
+        updateMusicUI(true);
+    }).catch(err => {
+        console.warn('Music play failed (check if file exists in assets folder):', err);
+        triggerToast('🎵 Add your audio file to /mindx-cinema/assets/study-music.mp3 to hear music!');
+        updateMusicUI(false);
+    });
 }
 
 function stopBackgroundMusic() {
-    if (bgMusicPlayer) {
-        try {
-            bgMusicPlayer.stop();
-        } catch (e) {
-            console.warn('Error stopping music:', e);
-        }
-        bgMusicPlayer = null;
-    }
-    updateMusicStatus('stopped');
+    const audio = getMusicElement();
+    if (!audio) return;
+    audio.pause();
+    updateMusicUI(false);
 }
 
-function updateMusicStatus(status) {
-    let badge = document.querySelector('.music-status-badge');
-    if (!badge) {
-        badge = document.createElement('div');
-        badge.className = 'music-status-badge';
-        document.body.appendChild(badge);
-    }
+function toggleMusicManual() {
+    const audio = getMusicElement();
+    if (!audio) return;
 
-    if (status === 'playing') {
-        badge.textContent = '🎵 Study music playing...';
-        badge.classList.add('playing');
-        badge.classList.remove('paused');
-        badge.style.display = 'block';
-    } else if (status === 'paused') {
-        badge.textContent = '⏸ Music paused';
-        badge.classList.add('paused');
-        badge.classList.remove('playing');
+    if (audio.paused) {
+        playBackgroundMusic();
     } else {
-        badge.style.display = 'none';
+        stopBackgroundMusic();
+    }
+}
+
+function updateMusicUI(isPlaying) {
+    const pill = document.querySelector('.music-player-pill');
+    const icon = document.getElementById('quickMusicIcon');
+    const statusText = document.getElementById('musicStatusText');
+
+    if (pill) pill.classList.toggle('playing', isPlaying);
+    if (icon) {
+        icon.className = isPlaying
+            ? 'bi bi-pause-circle-fill fs-5 music-note-spin'
+            : 'bi bi-music-note-beamed fs-5';
+    }
+    if (statusText) {
+        statusText.textContent = isPlaying ? 'Playing (Looped)' : 'Study Music';
     }
 }
 
@@ -295,22 +223,41 @@ function setupEventListeners() {
     document.getElementById('saveSettingsBtn').addEventListener('click', handleSaveSettings);
     document.getElementById('resetDataBtn').addEventListener('click', handleResetData);
 
-    // Music controls
+    // Top bar Music Player controls
+    const quickMusicBtn = document.getElementById('quickMusicToggleBtn');
+    const volumeSlider = document.getElementById('musicVolumeSlider');
+
+    if (quickMusicBtn) {
+        quickMusicBtn.addEventListener('click', toggleMusicManual);
+    }
+    if (volumeSlider) {
+        volumeSlider.value = appState.settings.musicVolume ?? 0.5;
+        volumeSlider.addEventListener('input', (e) => {
+            const vol = parseFloat(e.target.value);
+            appState.settings.musicVolume = vol;
+            const audio = getMusicElement();
+            if (audio) audio.volume = vol;
+            saveState();
+        });
+    }
+
+    // Settings Music controls
     const musicToggle = document.getElementById('settingMusicToggle');
     const musicTrack = document.getElementById('settingMusicTrack');
     if (musicToggle) {
         musicToggle.addEventListener('change', () => {
             appState.settings.musicEnabled = musicToggle.checked;
             saveState();
-            musicToggle.checked ? playBackgroundMusic() : stopBackgroundMusic();
         });
     }
     if (musicTrack) {
         musicTrack.addEventListener('change', () => {
             appState.settings.musicTrack = musicTrack.value;
             saveState();
-            stopBackgroundMusic();
-            playBackgroundMusic();
+            const audio = getMusicElement();
+            if (audio && !audio.paused) {
+                playBackgroundMusic();
+            }
         });
     }
 
@@ -381,7 +328,9 @@ function toggleTimer() {
         isTimerRunning = true;
         btn.innerHTML = '<i class="bi bi-pause-fill"></i> Pause';
         btn.className = 'btn btn-sm btn-warning text-dark';
-        playBackgroundMusic();
+        if (appState.settings.musicEnabled) {
+            playBackgroundMusic();
+        }
         document.getElementById('timerDisplay').classList.add('timer-active');
 
         activeTimer = setInterval(() => {
@@ -689,7 +638,7 @@ function renderDashboard() {
     const pct = Math.min(100, Math.round((appState.stats.minutesStudiedToday / appState.settings.dailyGoalMinutes) * 100));
     const progressBar = document.getElementById('dashGoalProgress');
     progressBar.style.width = `${pct}%`;
-    
+
     // Glow when goal reached
     if (pct >= 100) {
         progressBar.classList.add('goal-complete-glow');
@@ -1004,13 +953,13 @@ function handleSaveSettings() {
     appState.settings.musicTrack = document.getElementById('settingMusicTrack').value;
     saveState();
     triggerToast('✨ Settings successfully updated!');
-    
+
     // Apply music changes immediately
     if (isTimerRunning) {
         stopBackgroundMusic();
         playBackgroundMusic();
     }
-    
+
     renderDashboard();
 }
 
