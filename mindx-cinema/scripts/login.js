@@ -50,7 +50,7 @@ function setFormStatus(message, type = "") {
 
 // Already logged in? Go straight to the app.
 if (window.MeowusAuth.getSession()) {
-    window.location.replace("./index.html");
+    window.location.replace("/index.html");
 }
 
 // register.js redirects here with ?registered=1
