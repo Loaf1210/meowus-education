@@ -140,7 +140,7 @@ registerForm.addEventListener("submit", async (event) => {
         setFormStatus("Account created. Taking you to the login page…", "success");
 
         setTimeout(() => {
-            window.location.replace("./login.html?registered=1");
+            window.location.replace("/login.html?registered=1");
         }, 700);
 
     } catch (err) {

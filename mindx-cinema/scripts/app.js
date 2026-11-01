@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---- Require a login session (created by login.js) ----
     const session = window.MeowusAuth ? window.MeowusAuth.getSession() : null;
     if (!session) {
-        window.location.replace("./login.html");
+        window.location.replace("/login.html");
         return;
     }
 

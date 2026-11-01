@@ -19,6 +19,8 @@
     --primary-accent: #000000;
 }
 
+
+
 /* Base Body Styles */
 body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -379,3 +381,4 @@ body {
 .max-w-700 {
     max-width: 700px;
 }
+

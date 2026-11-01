@@ -130,7 +130,7 @@ loginForm.addEventListener("submit", async (event) => {
         setFormStatus("Login successful. Opening your study dashboard…", "success");
 
         setTimeout(() => {
-            window.location.replace("./index.html");
+            window.location.replace("/index.html");
         }, 250);
 
     } catch (err) {
