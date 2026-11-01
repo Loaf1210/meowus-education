@@ -1,40 +1,49 @@
 <!DOCTYPE html>
+<!-- data-bs-theme="dark" tells Bootstrap 5 to use its built-in dark mode colors -->
 <html lang="en" data-bs-theme="dark">
 
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Meowus Education</title>
-    <!-- Bootstrap 5 CSS (Dark Mode enabled) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <!-- Google Fonts -->
+
+    <!-- 'Plus Jakarta Sans' font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
+
     <link rel="stylesheet" href="./mindx-cinema/styles/style.css" />
 </head>
 
 <body>
-    <!-- Top Navigation Bar -->
+    <!-- ============================================================
+         HEADER / NAVIGATION BAR
+         - 'sticky-top' keeps the navbar at the top when scrolling.
+         - 'data-view="..."' attributes are used by our JavaScript to 
+           know which "page" to show when a button is clicked.
+         ============================================================ -->
     <header
         class="navbar navbar-expand-lg navbar-dark border-bottom border-secondary-subtle sticky-top bg-dark-surface">
         <div class="container-fluid px-3 px-lg-4">
+
+            <!-- App Logo Area -->
             <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
                 <span class="nav-icon-container">
-                    <img class="nav-icon" src="/mindx-cinema/assets/icon.png" alt="App Logo">
+                    <img class="nav-icon" src="./mindx-cinema/assets/icon.png" alt="App Logo">
                 </span>
             </a>
 
-            <!-- Mobile Toggle -->
+            <!-- Mobile Hamburger Menu Toggle -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Nav Items -->
+            <!-- Navigation Links -->
             <div class="collapse navbar-collapse" id="topNav">
+                <!-- 'nav-pills' makes the active link look like a highlighted button -->
                 <ul class="navbar-nav me-auto mb-2 ms-lg-5 nav-pills gap-1 ms-lg-3">
                     <li class="nav-item">
                         <button class="nav-link active" data-view="dashboard"><i class="bi bi-grid-1x2-fill me-1"></i>
@@ -49,8 +58,10 @@
                             Schedule</button>
                     </li>
                     <li class="nav-item">
+                        <!-- Chest Room link has a relative position so we can attach a red notification badge to it -->
                         <button class="nav-link position-relative" data-view="chests">
                             <i class="bi bi-archive-fill me-1"></i> Chest Room
+                            <!-- Badge is hidden ('d-none') by default. JS removes 'd-none' if chests > 0 -->
                             <span id="navChestBadge"
                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
                         </button>
@@ -69,36 +80,38 @@
                     </li>
                 </ul>
 
-                <!-- User / Auth Profile Area -->
-                <div class="d-flex align-items-center gap-2">
-                    <div id="authProfileDisplay" class="d-none align-items-center gap-2">
-                        <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1"
-                            id="currentUserDisplay">User</span>
-                        <button class="btn btn-sm btn-outline-danger" id="logoutBtn" title="Logout"><i
-                                class="bi bi-box-arrow-right"></i></button>
-                    </div>
-                    <button class="btn btn-sm btn-primary" id="loginModalBtn" data-bs-toggle="modal"
-                        data-bs-target="#authModal">
-                        <i class="bi bi-person-fill"></i> Sign In
+                <!-- Shown only after login.html creates a session -->
+                <div id="authProfileDisplay" class="d-flex align-items-center gap-2">
+                    <span class="badge bg-secondary-subtle text-light border border-secondary px-2 py-1"
+                        id="currentUserDisplay">User</span>
+                    <button class="btn btn-sm btn-outline-danger" id="logoutBtn" type="button" title="Log out">
+                        <i class="bi bi-box-arrow-right"></i> Log out
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Global Banner / Study Timer & Music Widget (Fixed Bar) -->
+    <!-- ============================================================
+         GLOBAL TIMER & MUSIC BAR
+         - This section stays visible no matter what view you are on.
+         - Contains the countdown timer, music controls, and claim button.
+         ============================================================ -->
     <section class="timer-bar border-bottom border-info-subtle py-2">
         <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+
             <!-- Left: Timer Display -->
             <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-stopwatch text-info fs-4"></i>
                 <div>
                     <span class="small text-secondary d-block">Session Timer</span>
+                    <!-- font-monospace keeps the numbers the exact same width so the layout doesn't jitter as time ticks down -->
                     <span class="fs-5 fw-bold font-monospace" id="timerDisplay">25:00</span>
                 </div>
             </div>
 
-            <!-- Center: Looped Study Music Bar -->
+            <!-- Center: Looped Study Music Player -->
+            <!-- We style this like a pill. JS updates the icon and text when playing -->
             <div
                 class="music-player-pill d-flex align-items-center gap-2 px-3 py-1 rounded-pill border border-secondary">
                 <button class="btn btn-sm btn-link text-info p-0 text-decoration-none" id="quickMusicToggleBtn"
@@ -106,12 +119,14 @@
                     <i class="bi bi-music-note-beamed fs-5" id="quickMusicIcon"></i>
                 </button>
                 <span class="small fw-semibold text-light" id="musicStatusText">Study Music</span>
+                <!-- input type="range" creates a slider. Min is 0 (mute), Max is 1 (100% volume) -->
                 <input type="range" class="form-range music-volume-slider" id="musicVolumeSlider" min="0" max="1"
                     step="0.05" value="0.5" title="Music Volume">
             </div>
 
             <!-- Right: Timer Controls -->
             <div class="d-flex align-items-center gap-2">
+                <!-- data-timer-type holds the minute value JS uses to reset the timer -->
                 <div class="btn-group btn-group-sm">
                     <button class="btn btn-outline-secondary active" data-timer-type="25">25m</button>
                     <button class="btn btn-outline-secondary" data-timer-type="50">50m</button>
@@ -121,6 +136,8 @@
                     Start</button>
                 <button class="btn btn-sm btn-outline-secondary" id="timerResetBtn"><i
                         class="bi bi-arrow-counterclockwise"></i></button>
+
+                <!-- Claim button is disabled by default. JS enables it after 15 minutes of studying -->
                 <button class="btn btn-sm btn-warning text-dark fw-bold" id="claimSessionRewardBtn" disabled
                     title="Finish at least 15 min to earn a Study Chest">
                     <i class="bi bi-gift-fill"></i> Finish & Claim Chest
@@ -129,13 +146,21 @@
         </div>
     </section>
 
-    <!-- Main View Container -->
+    <!-- ============================================================
+         MAIN VIEW CONTAINER (Single Page Application logic)
+         - All views exist in the HTML at once. 
+         - CSS hides them by default (display: none).
+         - The 'active' class (display: block) is moved around by JS.
+         ============================================================ -->
     <main class="container py-4 flex-grow-1">
 
         <!-- VIEW 1: DASHBOARD -->
         <div id="view-dashboard" class="app-view active">
+            <!-- row g-4 creates a CSS Grid row with gaps (g-4) between columns -->
             <div class="row g-4">
-                <!-- Quick stats -->
+
+                <!-- Top Row: Quick Stats Cards -->
+                <!-- col-12 means it takes full width on mobile. col-md-4 means it takes 1/3 width on medium+ screens -->
                 <div class="col-12 col-md-4">
                     <div class="card h-100 p-3 bg-dark-card border-secondary">
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -143,6 +168,7 @@
                             <i class="bi bi-fire text-warning fs-4"></i>
                         </div>
                         <h3 class="fw-bold mb-1" id="dashStudyMinutes">0 / 60 min</h3>
+                        <!-- Bootstrap Progress Bar -->
                         <div class="progress progress-bar-themed mb-2" style="height: 10px;">
                             <div class="progress-bar bg-primary" id="dashGoalProgress" style="width: 0%"></div>
                         </div>
@@ -176,28 +202,27 @@
                     </div>
                 </div>
 
-                <!-- Today's Pending Tasks -->
+                <!-- Bottom Left: Today's Pending Tasks -->
                 <div class="col-12 col-lg-7">
                     <div class="card bg-dark-card border-secondary p-3 h-100">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="fw-bold mb-0"><i class="bi bi-list-task me-2 text-primary"></i>Today's Priority
                                 Tasks</h5>
+                            <!-- Calls openCreateTaskModal() in JS without an ID, meaning "create new" -->
                             <button class="btn btn-sm btn-primary" onclick="openCreateTaskModal()">+ Add Task</button>
                         </div>
-                        <div id="dashTaskList" class="task-list-container d-flex flex-column gap-2">
-                            <!-- Dynamically populated -->
-                        </div>
+                        <!-- Empty container. JS loops through appState.tasks and injects HTML here. -->
+                        <div id="dashTaskList" class="task-list-container d-flex flex-column gap-2"></div>
                     </div>
                 </div>
 
-                <!-- Recent Cat Discoveries -->
+                <!-- Bottom Right: Recent Cat Discoveries -->
                 <div class="col-12 col-lg-5">
                     <div class="card bg-dark-card border-secondary p-3 h-100">
                         <h5 class="fw-bold mb-3"><i class="bi bi-stars text-warning me-2"></i>Recent Cat Discoveries
                         </h5>
-                        <div id="dashRecentCats" class="row g-2">
-                            <!-- Dynamically populated -->
-                        </div>
+                        <!-- Empty container. JS loops through the first 4 elements of appState.collection here. -->
+                        <div id="dashRecentCats" class="row g-2"></div>
                     </div>
                 </div>
             </div>
@@ -211,6 +236,7 @@
                     <p class="text-secondary mb-0">Complete tasks to earn corresponding reward chests!</p>
                 </div>
                 <div class="d-flex gap-2">
+                    <!-- Changing this triggers an event listener in JS to filter the rendered list -->
                     <select id="taskCategoryFilter" class="form-select form-select-sm bg-dark border-secondary">
                         <option value="all">All Categories</option>
                         <option value="small">Small Task (Cardboard Box)</option>
@@ -221,29 +247,27 @@
                             class="bi bi-plus-lg"></i> Add Task</button>
                 </div>
             </div>
-
-            <div class="row g-3" id="taskListGrid">
-                <!-- Rendered task cards -->
-            </div>
+            <!-- Grid where all tasks are rendered -->
+            <div class="row g-3" id="taskListGrid"></div>
         </div>
 
-        <!-- VIEW 3: SCHEDULE -->
+        <!-- VIEW 3: SCHEDULE (Visual Only feature) -->
         <div id="view-schedule" class="app-view">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h3 class="fw-bold mb-0">Study Schedule</h3>
                     <p class="text-secondary mb-0">Plan your revisions, lecture sessions, and assignment deadlines.</p>
                 </div>
+                <!-- Opens scheduleModal via Bootstrap attributes -->
                 <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#scheduleModal">+ Schedule
                     Event</button>
             </div>
-
-            <div class="row g-3" id="scheduleListContainer">
-                <!-- Scheduled blocks injected here -->
-            </div>
+            <div class="row g-3" id="scheduleListContainer"></div>
         </div>
 
         <!-- VIEW 4: CHEST ROOM -->
+        <!-- Contains static HTML structures for the 4 chest types.
+             JS simply updates the inner text of the span badges and enables/disables the buttons. -->
         <div id="view-chests" class="app-view">
             <div class="text-center mb-4">
                 <h2 class="fw-bold mb-1">Rewards & Chest Room</h2>
@@ -254,15 +278,11 @@
                 <!-- Cardboard Box -->
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card chest-card bg-dark-card border-secondary text-center p-3 h-100">
-                        <div class="chest-icon-wrapper mb-3">
-                            <i class="bi bi-box-seam fs-1 text-secondary"></i>
-                        </div>
+                        <div class="chest-icon-wrapper mb-3"><i class="bi bi-box-seam fs-1 text-secondary"></i></div>
                         <h5 class="fw-bold">Cardboard Box</h5>
                         <p class="small text-secondary mb-3">Reward for completing quick tasks.</p>
-                        <div class="mb-3">
-                            <span class="badge bg-secondary-subtle text-secondary-emphasis fs-6"
-                                id="boxCount-cardboard">0 Available</span>
-                        </div>
+                        <div class="mb-3"><span class="badge bg-secondary-subtle text-secondary-emphasis fs-6"
+                                id="boxCount-cardboard">0 Available</span></div>
                         <button class="btn btn-primary mt-auto" onclick="openChest('cardboard')" id="openBtn-cardboard"
                             disabled>Open Box</button>
                     </div>
@@ -271,14 +291,11 @@
                 <!-- Homework Box -->
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card chest-card bg-dark-card border-secondary text-center p-3 h-100">
-                        <div class="chest-icon-wrapper mb-3">
-                            <i class="bi bi-briefcase-fill fs-1 text-info"></i>
-                        </div>
+                        <div class="chest-icon-wrapper mb-3"><i class="bi bi-briefcase-fill fs-1 text-info"></i></div>
                         <h5 class="fw-bold">Homework Box</h5>
                         <p class="small text-secondary mb-3">Reward for finishing a full homework.</p>
-                        <div class="mb-3">
-                            <span class="badge bg-info-subtle text-info fs-6" id="boxCount-homework">0 Available</span>
-                        </div>
+                        <div class="mb-3"><span class="badge bg-info-subtle text-info fs-6" id="boxCount-homework">0
+                                Available</span></div>
                         <button class="btn btn-info mt-auto text-dark fw-bold" onclick="openChest('homework')"
                             id="openBtn-homework" disabled>Open Box</button>
                     </div>
@@ -287,15 +304,11 @@
                 <!-- Study Chest -->
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card chest-card bg-dark-card border-secondary text-center p-3 h-100">
-                        <div class="chest-icon-wrapper mb-3">
-                            <i class="bi bi-gem fs-1 text-primary"></i>
-                        </div>
+                        <div class="chest-icon-wrapper mb-3"><i class="bi bi-gem fs-1 text-primary"></i></div>
                         <h5 class="fw-bold">Study Chest</h5>
                         <p class="small text-secondary mb-3">Earned from focused study timer sessions.</p>
-                        <div class="mb-3">
-                            <span class="badge bg-primary-subtle text-primary fs-6" id="boxCount-study">0
-                                Available</span>
-                        </div>
+                        <div class="mb-3"><span class="badge bg-primary-subtle text-primary fs-6" id="boxCount-study">0
+                                Available</span></div>
                         <button class="btn btn-primary mt-auto" onclick="openChest('study')" id="openBtn-study"
                             disabled>Open Chest</button>
                     </div>
@@ -304,14 +317,11 @@
                 <!-- Golden Chest -->
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card chest-card bg-dark-card border-warning text-center p-3 h-100">
-                        <div class="chest-icon-wrapper mb-3">
-                            <i class="bi bi-trophy-fill fs-1 text-warning"></i>
-                        </div>
+                        <div class="chest-icon-wrapper mb-3"><i class="bi bi-trophy-fill fs-1 text-warning"></i></div>
                         <h5 class="fw-bold text-warning">Golden Chest</h5>
                         <p class="small text-secondary mb-3">Higher Epic/Legendary cat chance for milestones.</p>
-                        <div class="mb-3">
-                            <span class="badge bg-warning text-dark fs-6" id="boxCount-golden">0 Available</span>
-                        </div>
+                        <div class="mb-3"><span class="badge bg-warning text-dark fs-6" id="boxCount-golden">0
+                                Available</span></div>
                         <button class="btn btn-warning mt-auto fw-bold text-dark" onclick="openChest('golden')"
                             id="openBtn-golden" disabled>Open Golden Chest</button>
                     </div>
@@ -336,13 +346,12 @@
                     </select>
                 </div>
             </div>
-
-            <div class="row g-3" id="collectionGrid">
-                <!-- Cats injected here -->
-            </div>
+            <!-- JS loops through appState.collection and injects Cat Cards here -->
+            <div class="row g-3" id="collectionGrid"></div>
         </div>
 
         <!-- VIEW 6: STATISTICS -->
+        <!-- Purely visual view. JS calculates values from appState arrays and injects the text -->
         <div id="view-stats" class="app-view">
             <h3 class="fw-bold mb-4">Study Performance & Collection Metrics</h3>
             <div class="row g-4">
@@ -374,18 +383,14 @@
                 <div class="col-12 col-md-6">
                     <div class="card bg-dark-card border-secondary p-4 h-100">
                         <h5 class="fw-bold mb-3">Cat Collection Rarity Breakdown</h5>
-                        <div id="rarityBreakdownContainer" class="d-flex flex-column gap-3">
-                            <!-- Progress meters for Common/Rare/Epic/Legendary -->
-                        </div>
+                        <div id="rarityBreakdownContainer" class="d-flex flex-column gap-3"></div>
                     </div>
                 </div>
 
                 <div class="col-12 col-md-6">
                     <div class="card bg-dark-card border-secondary p-4 h-100">
                         <h5 class="fw-bold mb-3">Chests Opened Lifetime</h5>
-                        <div id="chestBreakdownContainer" class="d-flex flex-column gap-2">
-                            <!-- Breakdown list -->
-                        </div>
+                        <div id="chestBreakdownContainer" class="d-flex flex-column gap-2"></div>
                     </div>
                 </div>
             </div>
@@ -413,25 +418,31 @@
                 <div class="mb-3">
                     <label class="form-label">Study Background Music Track</label>
                     <select class="form-select bg-dark border-secondary" id="settingMusicTrack">
-                        <option value="./mindx-cinema/assets/study-music.mp3" selected>Main Study Theme (study-music.mp3)</option>
+                        <!-- The values here map exactly to the file paths loaded by the <audio> element -->
+                        <option value="./mindx-cinema/assets/study-music.mp3" selected>Main Study Theme
+                            (study-music.mp3)</option>
                         <option value="./mindx-cinema/assets/lofi.mp3">Lo-Fi Beats (lofi.mp3)</option>
                         <option value="./mindx-cinema/assets/ambient.mp3">Ambient Focus (ambient.mp3)</option>
                     </select>
                     <div class="form-text">Put your audio files inside <code>/mindx-cinema/assets/</code>!</div>
                 </div>
 
+                <!-- Toggles. JS checks if they are '.checked' when Save is clicked -->
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" id="settingMusicToggle" checked>
-                    <label class="form-check-label" for="settingMusicToggle">Auto-Play Study Music When Timer Starts</label>
+                    <label class="form-check-label" for="settingMusicToggle">Auto-Play Study Music When Timer
+                        Starts</label>
                 </div>
 
                 <div class="form-check form-switch mb-3">
                     <input class="form-check-input" type="checkbox" id="settingSoundToggle" checked>
-                    <label class="form-check-label" for="settingSoundToggle">Enable Sound Effects for Chests & Timer</label>
+                    <label class="form-check-label" for="settingSoundToggle">Enable Sound Effects for Chests &
+                        Timer</label>
                 </div>
 
                 <hr class="border-secondary my-4" />
 
+                <!-- Danger Zone: Wipes local storage -->
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="fw-bold text-danger mb-1">Reset All Local Data</h6>
@@ -448,6 +459,12 @@
 
     </main>
 
+    <!-- ============================================================
+         MODALS
+         - These are hidden dialog boxes that overlay the screen.
+         - Bootstrap controls the visual show/hide via JS classes.
+         ============================================================ -->
+
     <!-- MODAL: Add / Edit Task -->
     <div class="modal fade" id="taskModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -457,7 +474,9 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- form submit triggers JS 'handleTaskSubmit' which stops the page from refreshing -->
                     <form id="taskForm">
+                        <!-- Hidden input used to track if we are Editing an existing task or Creating a new one -->
                         <input type="hidden" id="taskFormId" />
                         <div class="mb-3">
                             <label class="form-label">Task Title</label>
@@ -503,7 +522,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Add Schedule Event -->
+    <!-- MODAL: Add Schedule Event (Form logic similar to Tasks) -->
     <div class="modal fade" id="scheduleModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark-card border-secondary">
@@ -559,12 +578,14 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark-card border-secondary text-center overflow-hidden">
                 <div class="modal-body p-4">
+                    <!-- View 1: Spinner. Shown while waiting for The Cat API to return an image -->
                     <div id="unboxingSpinner" class="py-5">
                         <div class="spinner-grow text-warning mb-3" style="width: 3.5rem; height: 3.5rem;"></div>
                         <h4 class="fw-bold animate-pulse">Unlocking Chest & Calling The Cat API...</h4>
                         <p class="text-secondary small">Looking for a brand new, unique cat...</p>
                     </div>
 
+                    <!-- View 2: Result. Hidden initially. JS hides the spinner and shows this when API finishes -->
                     <div id="unboxingResult" class="d-none">
                         <span class="badge mb-2 px-3 py-1 fs-6 text-uppercase fw-bold" id="catRarityBadge">Common</span>
                         <div class="cat-reveal-image-container position-relative rounded overflow-hidden my-3">
@@ -573,6 +594,7 @@
                         <h4 class="fw-bold" id="catRevealName">Unique Cat Rescued!</h4>
                         <p class="text-secondary small font-monospace mb-1" id="catRevealId">Cat ID: -</p>
                         <p class="text-secondary small mb-3" id="catRevealDate"></p>
+                        <!-- data-bs-dismiss="modal" automatically closes the overlay -->
                         <button class="btn btn-success px-4" data-bs-dismiss="modal">Add to Collection</button>
                     </div>
                 </div>
@@ -580,7 +602,7 @@
         </div>
     </div>
 
-    <!-- MODAL: Cat Card Inspector -->
+    <!-- MODAL: Cat Card Inspector (with RENAME + REMOVE) -->
     <div class="modal fade" id="catInspectModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-dark-card border-secondary">
@@ -595,8 +617,8 @@
                     <span class="badge mb-2 px-3 py-1" id="inspectRarity"></span>
                     <p class="text-secondary small mb-0" id="inspectDate"></p>
 
-                    <!-- NEW: Cat Rename Section -->
-                    <div class="card bg-dark border-secondary p-2 mb-3">
+                    <!-- Cat Renaming Section: JS reads this input and modifies the Cat object in appState -->
+                    <div class="card bg-dark border-secondary p-2 mb-3 mt-3">
                         <input type="text" class="form-control bg-dark border-secondary form-control-sm"
                             id="catCustomName" placeholder="Give your cat a custom name..." maxlength="50">
                         <button class="btn btn-sm btn-outline-success mt-2 w-100" id="saveCustomNameBtn">
@@ -604,6 +626,7 @@
                         </button>
                     </div>
 
+                    <!-- Deletes the cat from appState.collection array -->
                     <button class="btn btn-sm btn-outline-danger w-100" id="removeCatBtn">
                         <i class="bi bi-trash"></i> Remove from Collection
                     </button>
@@ -612,38 +635,23 @@
         </div>
     </div>
 
-    <!-- MODAL: Sign In / Auth -->
-    <div class="modal fade" id="authModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark-card border-secondary">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title fw-bold">Sign In / Switch Profile</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="authForm">
-                        <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input type="text" class="form-control bg-dark border-secondary" id="authUsernameInput"
-                                required placeholder="e.g. CatScholar" />
-                            <div class="form-text">Every username keeps separate tasks, chests, and collections in
-                                localStorage.</div>
-                        </div>
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">Continue</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Audio for background study music (Put your study-music.mp3 in /mindx-cinema/assets/) -->
+    <!-- ============================================================
+         BACKGROUND MUSIC AUDIO ELEMENT
+         - This is invisible. 
+         - JavaScript targets the ID "bgMusicPlayer" to play, pause, 
+           set volume, and change the 'src' attribute.
+         - 'loop' means it repeats forever.
+         - 'preload="auto"' tells the browser to download it early so 
+           it plays instantly when the timer starts.
+         ============================================================ -->
     <audio id="bgMusicPlayer" src="./mindx-cinema/assets/study-music.mp3" loop preload="auto"></audio>
 
-    <!-- Bootstrap JS Bundle -->
+    <!-- Bootstrap JS Bundle (Required for Modals, Dropdowns, and Navbars to work) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Main Application Logic -->
     <script src="./mindx-cinema/scripts/app.js"></script>
+    <script src="./mindx-cinema/scripts/auth.js"></script>
 </body>
 
 </html>

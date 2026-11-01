@@ -1,13 +1,41 @@
+/* 
+  :root defines CSS variables (Custom Properties). 
+  These are used throughout the file so we only have to change colors in one place.
+  Using a pure black theme for high contrast.
+*/
 :root {
     --bg-body: #000000;
+    /* Pure black background */
     --bg-surface: #000000;
+    /* Navbar background */
     --bg-card: #000000;
+    /* Card backgrounds */
     --border-color: #02050a;
+    /* Very dark borders */
     --text-main: #f0f6fc;
+    /* Off-white text for readability */
     --text-muted: #8b949e;
+    /* Gray text for secondary info */
     --primary-accent: #000000;
 }
 
+/* Base Body Styles */
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    min-height: 100vh;
+    /* Ensures body is at least the height of the screen */
+    display: flex;
+    flex-direction: column;
+    /* Allows the <main> element to push the footer down if we add one */
+}
+
+/* 
+  Navbar App Logo Container
+  Uses absolute positioning inside a relative container to break out of the standard flow 
+  and allow a large, overlapping logo image.
+*/
 .nav-icon-container {
     position: relative;
     width: 200px;
@@ -18,22 +46,13 @@
     position: absolute;
     width: 250px;
     height: 250px;
-
     top: 50%;
     left: 60%;
     transform: translate(-50%, -50%);
+    /* Centers the absolute element perfectly */
 }
 
-body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: var(--bg-body);
-    color: var(--text-main);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Background surfaces */
+/* Surface Overrides using !important to override Bootstrap's default colors */
 .bg-dark-surface {
     background-color: var(--bg-surface) !important;
 }
@@ -42,27 +61,29 @@ body {
     background-color: var(--bg-card) !important;
 }
 
-/* App Logo Icon styling */
-.app-icon {
-    width: 32px;
-    height: 32px;
-    object-fit: cover;
-    border: 1.5px solid var(--primary-accent);
-}
-
+/* Gradient Text Effect */
 .text-gradient {
     background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    /* Clips the background color strictly to the text outline */
     -webkit-text-fill-color: transparent;
+    /* Makes the actual text invisible, revealing the gradient */
 }
 
-/* View switcher */
+/* ============================================================
+   SINGLE PAGE APPLICATION (SPA) VIEW SWITCHER
+   Instead of loading new HTML files, JS adds the 'active' class
+   to the view we want to see. The animation creates a smooth transition.
+   ============================================================ */
 .app-view {
     display: none;
+    /* Hidden by default */
     animation: fadeIn 0.25s ease-in-out;
 }
 
 .app-view.active {
     display: block;
+    /* Shown when active */
 }
 
 @keyframes fadeIn {
@@ -71,25 +92,34 @@ body {
         transform: translateY(6px);
     }
 
+    /* Starts slightly lower and transparent */
     to {
         opacity: 1;
         transform: translateY(0);
     }
+
+    /* Slides into place */
 }
 
-/* Timer Bar Custom Color & Glow */
+/* ============================================================
+   TIMER BAR & MUSIC PLAYER
+   ============================================================ */
 .timer-bar {
     background-color: #040814 !important;
-    border-bottom: 1px solid #0dcaf0 !important; /* Cyan / Info border */
+    /* Very dark blue/black */
+    border-bottom: 1px solid #0dcaf0 !important;
+    /* Cyan border */
     box-shadow: 0 4px 20px rgba(13, 202, 240, 0.12);
+    /* Subtle cyan glow below the bar */
 }
 
-/* Music Player Pill in Timer Bar */
+/* The background container for the music play button and volume slider */
 .music-player-pill {
     background-color: rgba(255, 255, 255, 0.03);
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* When JS adds the .playing class, the border glows cyan */
 .music-player-pill.playing {
     border-color: #0dcaf0 !important;
     box-shadow: 0 0 12px rgba(13, 202, 240, 0.25);
@@ -101,7 +131,7 @@ body {
     cursor: pointer;
 }
 
-/* Spinning/bouncing music note when active */
+/* Bouncing music note icon. JS toggles the class 'music-note-spin' when playing. */
 .music-note-spin {
     display: inline-block;
     animation: musicBounce 1s ease-in-out infinite;
@@ -109,20 +139,118 @@ body {
 }
 
 @keyframes musicBounce {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-3px) scale(1.15); }
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1); /* 0%-100%: original state */
+    }
+
+    50% {
+        transform: translateY(-3px) scale(1.15); /* when mid-way, slowly scale up and move up */
+    }
 }
 
-/* Chest Cards */
+/* Timer digits glow when running */
+#timerDisplay.timer-active {
+    color: #38bdf8 !important;
+    /* Light blue text */
+    text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+    /* Blue text shadow creates a neon effect */
+}
+
+/* ============================================================
+   GAMIFICATION: GLOWS, CONFETTI & CELEBRATION ANIMATIONS
+   ============================================================ */
+/* Added via JS when daily goal >= 100% */
+/* !important is used for priority */
+.goal-complete-glow {
+    background: linear-gradient(90deg, #34d399, #10b981) !important;
+    box-shadow: 0 0 15px rgba(52, 211, 153, 0.5) !important;
+}
+
+/* Added via JS to a task card when marked complete */
+.task-completed-glow {
+    background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(34, 197, 94, 0.1)) !important;
+    border-color: #22c55e !important;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.2) !important;
+}
+
+/* Pulsing button effect when a chest count > 0 */
+.chest-available {
+    animation: chessPulse 1.5s ease-in-out infinite;
+}  /* You can make your own animation, using animation: */
+
+@keyframes chessPulse {
+
+    /* Uses box-shadow expansion to simulate a "radar" or "heartbeat" ring */
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(251, 146, 60, 0);
+    }
+}
+
+/* Pop-in bounce when a new cat image is revealed in the modal */
+.chest-opening-celebration {
+    animation: celebrationBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes celebrationBounce {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-20px) scale(1.1);
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 
+   Confetti CSS. JS creates <div> elements with this class and appends them to body.
+   'fixed' positioning ensures they overlay everything on screen.
+   'pointer-events: none' ensures you can still click things underneath the falling confetti.
+*/
+.confetti-particle {
+    position: fixed;
+    pointer-events: none; /* ignore mouse completely */
+    z-index: 10000;
+    animation: confettiFall 2s ease-out forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateY(0) rotateZ(0deg);
+    }
+
+    /* Falls down 200px and spins 720 degrees, fading out */
+    100% {
+        opacity: 0;
+        transform: translateY(200px) rotateZ(720deg);
+    }
+}
+
+/* ============================================================
+   CHEST CARDS & ICONS
+   ============================================================ */
 .chest-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .chest-card:hover {
     transform: translateY(-4px);
+    /* Moves up slightly on mouse hover */
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
+/* Floating animation for the icons sitting above the chest cards */
 .chest-icon-wrapper {
     animation: floatIcon 3s ease-in-out infinite;
 }
@@ -137,9 +265,14 @@ body {
     50% {
         transform: translateY(-6px);
     }
+
+    /* Bob up and down slowly */
 }
 
-/* Rarity Glowing Borders & Badges */
+/* ============================================================
+   RARITY GLOWING BORDERS & BADGES
+   Depending on the cat's rarity string in JS, we apply one of these classes.
+   ============================================================ */
 .rarity-Common {
     border-color: #8b949e !important;
 }
@@ -172,6 +305,8 @@ body {
 .rarity-Legendary {
     border-color: #eab308 !important;
     box-shadow: 0 0 18px rgba(234, 179, 8, 0.35);
+    /* Legendary gets a special continuous shimmer animation */
+    animation: legendaryShimmer 2s ease-in-out infinite;
 }
 
 .badge-Legendary {
@@ -179,10 +314,30 @@ body {
     color: #fff;
 }
 
-/* Cat Card Thumbnails */
+@keyframes legendaryShimmer {
+
+    0%,
+    100% {
+        border-color: #eab308;
+        box-shadow: 0 0 10px rgba(234, 179, 8, 0.2);
+    }
+
+    50% {
+        border-color: #fbbf24;
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+    }
+
+    /* Intensify shadow */
+}
+
+/* ============================================================
+   CAT CARD THUMBNAILS
+   ============================================================ */
 .cat-thumbnail {
     aspect-ratio: 1 / 1;
+    /* Forces perfect squares for image thumbnails */
     object-fit: cover;
+    /* Crops image to fit the square without stretching */
     width: 100%;
 }
 
@@ -193,8 +348,10 @@ body {
 
 .cat-card-interactive:hover {
     transform: scale(1.03);
+    /* Slight zoom when hovering over a cat in the collection */
 }
 
+/* Loading pulsing text used in the Unboxing Modal */
 .animate-pulse {
     animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -211,10 +368,12 @@ body {
     }
 }
 
-/* Scrollable containers */
+/* Scrollable container constraints */
 .task-list-container {
     max-height: 480px;
+    /* Prevents long task lists from breaking the page height */
     overflow-y: auto;
+    /* Adds vertical scrollbar if needed */
 }
 
 .max-w-700 {
