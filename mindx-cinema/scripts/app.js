@@ -1,7 +1,6 @@
 /**
- * Gamified Study & Cat Collector - Complete Application Engine
  * 
- * ARCHITECTURE OVERVIEW:
+ * ARCHITECTURE:
  * 1. State (appState): A central JavaScript object holds all data (tasks, chests, cats).
  * 2. Persistence (saveState): Every time state changes, it's saved to the browser's localStorage.
  * 3. Rendering (renderAllViews): Functions read appState and update the HTML.
@@ -65,20 +64,18 @@ let audioContext = null;
  */
 function getAudioContext() {
     if (!audioContext) {
-        // Fallback for older Safari
+        // Fallback for older versions of Safari
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
+    } // Uses Web Audio API
     return audioContext;
 }
 
-/** Helper to grab the <audio> tag from HTML */
+/** Grab the <audio> tag from HTML */
 function getMusicElement() {
     return document.getElementById('bgMusicPlayer');
 }
 
-/** 
- * Starts the looping MP3 background track based on Settings.
- */
+/* Starts the looping MP3 background track based on Settings.*/
 function playBackgroundMusic() {
     const audio = getMusicElement();
     if (!audio) return;
@@ -100,8 +97,7 @@ function playBackgroundMusic() {
     audio.play().then(() => {
         updateMusicUI(true);
     }).catch(err => {
-        console.warn('Music play failed (check if file exists in assets folder):', err);
-        triggerToast('🎵 Add your audio file to /mindx-cinema/assets/study-music.mp3 to hear music!');
+        console.warn('Music play failed (check if file exists: )', err);
         updateMusicUI(false);
     });
 }
@@ -295,7 +291,7 @@ function loadUserData(username) {
     saveState(); // persist merged/migrated fields
 }
 
-/** Translates our memory object (appState) into a string and saves it to the browser database */
+/** Translates memory object (appState) into a string and saves it to the database */
 function saveState() {
     localStorage.setItem(STORAGE_PREFIX + 'data_' + appState.user, JSON.stringify(appState));
 }
@@ -306,7 +302,8 @@ function saveState() {
  */
 function checkDailyStreakRollover() {
     const today = new Date().toISOString().slice(0, 10); // Format: "2023-10-05"
-
+    // toISOString(): converts date into standard ISO 8601 string in UTC
+    // ISO 8601 string: formats from largest to smallest, YYYY-MM-DD
     if (appState.stats.lastActiveDate !== today) {
         // They are logging in on a new day
         const last = new Date(appState.stats.lastActiveDate);
@@ -590,7 +587,7 @@ function claimSessionChest() {
         appState.chests.study++;
         playBeep(523.25, 'sine', 0.3);
         createConfetti(); // Visual explosion!
-        triggerToast('🎉 Awesome focus session! 1 Study Chest added to your Chest Room.');
+        triggerToast('Awesome!! 1 Study Chest added to your Chest Room.');
 
         sessionSecondsAccumulated = 0; // Reset so they have to study another 15m
         document.getElementById('claimSessionRewardBtn').setAttribute('disabled', 'true');
@@ -895,7 +892,7 @@ function renderDashboard() {
         document.getElementById('dashStudyMinutes').classList.remove('text-success');
     }
 
-    document.getElementById('dashStreakText').textContent = `🔥 ${appState.stats.streakDays}-day study streak`;
+    document.getElementById('dashStreakText').textContent = `! ${appState.stats.streakDays}-day study streak`;
 
     // Array.reduce() sums up values. We extract the numbers from the object and add them together.
     const totalChests = Object.values(appState.chests).reduce((accumulator, current) => accumulator + current, 0);
@@ -1087,7 +1084,7 @@ function renderCollection() {
         <div class="p-2 text-center">
           <span class="badge badge-${cat.rarity} w-100 mb-1">${cat.rarity}</span>
           <!-- Ensure HTML injection uses escapeHtml to prevent malicious script execution (XSS) if users typed script tags in the name -->
-          <div class="small text-secondary font-monospace text-truncate fw-bold">${escapeHtml(cat.customName) || '✨ Unnamed'}</div>
+          <div class="small text-secondary font-monospace text-truncate fw-bold">${escapeHtml(cat.customName) || 'Unnamed'}</div>
           <div class="small text-secondary font-monospace text-truncate" style="font-size: 0.7rem;">${cat.id}</div>
         </div>
       </div>
@@ -1139,7 +1136,7 @@ function saveCustomCatName() {
     if (newName.length > 0) {
         cat.customName = newName;
         playBeep(587.33, 'sine', 0.2);
-        triggerToast(`✨ Your cat is now called "${escapeHtml(newName)}"!`);
+        triggerToast(`Your cat is now called "${escapeHtml(newName)}"!`);
     } else {
         cat.customName = '';
         triggerToast('Custom name removed.');
@@ -1166,7 +1163,7 @@ function removeCatFromCollection() {
     appState.collection = appState.collection.filter(c => c.id !== currentInspectingCatId);
     saveState();
     catInspectModalInstance.hide(); // Close modal on delete
-    triggerToast('🗑️ Cat removed from collection.');
+    triggerToast('Cat removed from collection! :(');
     renderCollection();
     renderDashboard();
 }
