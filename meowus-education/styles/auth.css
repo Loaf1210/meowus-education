@@ -31,8 +31,8 @@
    2. PAGE BACKGROUND
    ------------------------------------------------------------ */
 *,
-*::before,
-*::after {
+*::before, /* add something before the content */
+*::after { /* add smt after */
     box-sizing: border-box;
 }
 
