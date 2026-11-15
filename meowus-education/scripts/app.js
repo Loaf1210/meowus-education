@@ -20,7 +20,7 @@ const DEFAULT_STATE = {
         apiKey: '',
         soundEnabled: true,
         musicEnabled: true,
-        musicTrack: "./mindx-cinema/assets/study-music.mp3",
+        musicTrack: "./meowus-education/assets/study-music.mp3",
         musicVolume: 0.5
     },
     stats: {
@@ -81,7 +81,7 @@ function playBackgroundMusic() {
     if (!audio) return;
 
     // Determine which track to play based on appState
-    const trackUrl = appState.settings.musicTrack || './mindx-cinema/assets/study-music.mp3';
+    const trackUrl = appState.settings.musicTrack || './meowus-education/assets/study-music.mp3';
 
     // Only swap the 'src' attribute if it's actually different.
     // Changing 'src' unnecessarily restarts the download/buffer process.
@@ -252,10 +252,10 @@ function loadUserData(username) {
 
         // ---- Migrate old music settings ----
         const oldTrackPaths = {
-            ambient: "./mindx-cinema/assets/ambient.mp3",
-            piano: "./mindx-cinema/assets/piano.mp3",
-            "lo-fi": "./mindx-cinema/assets/lofi.mp3",
-            nature: "./mindx-cinema/assets/nature.mp3"
+            ambient: "./meowus-education/assets/ambient.mp3",
+            piano: "./meowus-education/assets/piano.mp3",
+            "lo-fi": "./meowus-education/assets/lofi.mp3",
+            nature: "./meowus-education/assets/nature.mp3"
         };
         if (oldTrackPaths[appState.settings.musicTrack]) {
             appState.settings.musicTrack = oldTrackPaths[appState.settings.musicTrack];
@@ -1218,7 +1218,7 @@ function renderSettings() {
     document.getElementById('settingApiKey').value = appState.settings.apiKey;
     document.getElementById('settingSoundToggle').checked = appState.settings.soundEnabled;
     document.getElementById('settingMusicToggle').checked = appState.settings.musicEnabled || true;
-    document.getElementById('settingMusicTrack').value = appState.settings.musicTrack || './mindx-cinema/assets/study-music.mp3';
+    document.getElementById('settingMusicTrack').value = appState.settings.musicTrack || './meowus-education/assets/study-music.mp3';
 }
 
 /** Reads the settings form inputs and pushes to appState */
