@@ -49,7 +49,7 @@ function setFormStatus(message, type = "") {
 
 // Already logged in? Go straight to the app.
 if (window.MeowusAuth.getSession()) {
-    window.location.replace("/index.html");
+    window.location.replace("./index.html");
 }
 
 // register.js redirects here with ?registered=1
@@ -129,7 +129,7 @@ loginForm.addEventListener("submit", async (event) => {
         setFormStatus("Login successful. Opening your study dashboard…", "success");
 
         setTimeout(() => {
-            window.location.replace("/index.html");
+            window.location.replace("./index.html");
         }, 250);
 
     } catch (err) {
