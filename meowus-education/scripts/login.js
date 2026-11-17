@@ -2,7 +2,7 @@
 /* ============================================================
    Login page
    Requires username + email + password to match ONE account.
-   On success: auth.js stores a session, then redirect to index.html.
+   On success: auth.js stores a session, then redirect to main.html.
    ============================================================ */
 
 const loginForm   = document.getElementById("login-form");
@@ -49,7 +49,7 @@ function setFormStatus(message, type = "") {
 
 // Already logged in? Go straight to the app.
 if (window.MeowusAuth.getSession()) {
-    window.location.replace("./index.html");
+    window.location.replace("./main.html");
 }
 
 // register.js redirects here with ?registered=1
@@ -129,7 +129,7 @@ loginForm.addEventListener("submit", async (event) => {
         setFormStatus("Login successful. Opening your study dashboard…", "success");
 
         setTimeout(() => {
-            window.location.replace("./index.html");
+            window.location.replace("./main.html");
         }, 250);
 
     } catch (err) {

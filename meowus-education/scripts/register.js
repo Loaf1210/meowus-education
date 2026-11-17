@@ -5,7 +5,7 @@
    2. Reject duplicate username / email
    3. Hash password (auth.js)
    4. Save account to localStorage "users"
-   5. Redirect to login.html
+   5. Redirect to index.html
    ============================================================ */
 
 const registerForm   = document.getElementById("register-form");
@@ -139,7 +139,7 @@ registerForm.addEventListener("submit", async (event) => {
         setFormStatus("Account created. Taking you to the login page…", "success");
 
         setTimeout(() => {
-            window.location.replace("./login.html?registered=1");
+            window.location.replace("./index.html?registered=1");
         }, 700);
 
     } catch (err) {

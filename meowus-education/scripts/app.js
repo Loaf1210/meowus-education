@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---- Require a login session (created by login.js) ----
     const session = window.MeowusAuth ? window.MeowusAuth.getSession() : null;
     if (!session) {
-        window.location.replace("/login.html");
+        window.location.replace("/index.html");
         return;
     }
 
@@ -411,7 +411,7 @@ function setupEventListeners() {
 
             // Clears the login session only — account + study data are kept
             window.MeowusAuth.clearSession();
-            window.location.replace("./login.html");
+            window.location.replace("./index.html");
         });
     }
 
