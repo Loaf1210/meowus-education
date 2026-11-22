@@ -97,7 +97,8 @@ function playBackgroundMusic() {
     audio.play().then(() => {
         updateMusicUI(true);
     }).catch(err => {
-        console.warn('Music play failed (check if file exists: )', err);
+        console.warn('Music play failed:', err);
+        triggerToast('🎵 Music failed: ' + (err.name === 'NotSupportedError' ? 'file not found/unsupported' : err.message));
         updateMusicUI(false);
     });
 }
@@ -250,21 +251,11 @@ function loadUserData(username) {
                 : []
         };
 
-        // ---- Migrate old music settings ----
-        const oldTrackPaths = {
-            ambient: "./meowus-education/assets/ambient.mp3",
-            piano: "./meowus-education/assets/piano.mp3",
-            "lo-fi": "./meowus-education/assets/lofi.mp3",
-            nature: "./meowus-education/assets/nature.mp3"
-        };
-        if (oldTrackPaths[appState.settings.musicTrack]) {
-            appState.settings.musicTrack = oldTrackPaths[appState.settings.musicTrack];
+        // ---- Repair music track: only allow tracks that actually exist ----
+        const validTracks = ["./meowus-education/assets/study-music.mp3"];
+        if (!validTracks.includes(appState.settings.musicTrack)) {
+            appState.settings.musicTrack = validTracks[0];
         }
-
-        const vol = Number(appState.settings.musicVolume);
-        appState.settings.musicVolume = Number.isFinite(vol)
-            ? Math.max(0, Math.min(1, vol > 1 ? vol / 100 : vol)) // 35 -> 0.35
-            : 0.5;
 
     } else {
         // ---- First time this account opens the study app ----
